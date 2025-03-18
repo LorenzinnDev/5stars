@@ -1,0 +1,211 @@
+<!-- Código Original com Botão Implementado -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template de Email</title>
+  <style>
+    .stars {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    .stars .star {
+      margin: 0 5px;
+      transition: color 0.3s ease;
+    }
+
+    .stars .star:hover,
+    .stars .star.selected {
+      color: #f5a623;
+    }
+
+    #aval {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .feedback-container {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .feedback-container textarea {
+      width: 70%;
+      max-width: 100%;
+      height: 100px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      resize: none;
+    }
+
+    .feedback-container textarea::placeholder {
+      font-family: 'Arial', sans-serif;
+      font-size: 16px;
+      color: #a3a3a3;
+      font-style: italic;
+    }
+
+    .feedback-container button {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #16537e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .feedback-container button:hover {
+      background-color: #123a5e;
+    }
+
+    @media (max-width: 600px) {
+      .stars {
+        font-size: 25px;
+      }
+
+      .feedback-container textarea {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333;">
+  <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px; margin: auto; border: 1px solid #cdcdcd; background-color: #ededed; border-radius: 20px; overflow: hidden; margin-top: 20px; margin-bottom: 20px;">
+    <tr>
+      <td style="padding: 20px; text-align: center; background-color: #16537e; color: #ffffff;">
+        <img src="http://helpdesk.optimall.com.br/pics/logos/logo-GLPI-250-white.png" alt="Tacla" style="max-width: 100%; height: 100px;">
+      </td>
+    </tr>
+
+    <!-- Avaliação com estrelas -->
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <h2>Avalie o atendimento:</h2>
+
+        <!-- Estrelas para votação -->
+        <div class="stars-wrapper">
+          <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+          </div>
+          <br>
+          <!-- Labels abaixo das estrelas -->
+          <div class="rating-labels-wrapper" id="aval">
+            <span>Muito Ruim</span>
+            <span>Ruim</span>
+            <span>Regular</span>
+            <span>Bom</span>
+            <span>Muito Bom</span>
+          </div>
+        </div>
+        <br>
+        <!-- Caixa de feedback -->
+        <div id="feedback" class="feedback-container">
+          <textarea id="feedback-text" placeholder="Conte-nos como podemos melhorar..."></textarea>
+          <!-- Botão para enviar -->
+          <button id="submit-feedback">Enviar</button>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Rodapé -->
+    <tr>
+      <td style="padding: 20px; text-align: center; font-size: 12px; color: #888;">
+        <p style="margin: 0;">
+          <i>Você está recebendo este e-mail porque realizou a abertura de um chamado.</i>
+        </p>
+      </td>
+    </tr>
+
+  </table>
+
+  <script>
+    const stars = document.querySelectorAll('.star');
+    const feedbackContainer = document.getElementById('feedback');
+    const feedbackText = document.getElementById('feedback-text');
+    const submitFeedbackButton = document.getElementById('submit-feedback');
+    let selectedValue = 0;
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', () => highlightStars(star));
+      star.addEventListener('mouseout', () => highlightStarsOnSelect());
+      star.addEventListener('click', () => selectStar(star));
+    });
+
+    function highlightStars(star) {
+      const value = parseInt(star.getAttribute('data-value'));
+      stars.forEach((s, index) => {
+        if (index < value) {
+          s.style.color = '#f5a623';
+        } else {
+          s.style.color = '#ccc';
+        }
+      });
+    }
+
+    function highlightStarsOnSelect() {
+      stars.forEach((star, index) => {
+        if (index < selectedValue) {
+          star.style.color = '#f5a623';
+        } else {
+          star.style.color = '#ccc';
+        }
+      });
+    }
+
+    function selectStar(star) {
+      const value = parseInt(star.getAttribute('data-value'));
+      selectedValue = value;
+
+      stars.forEach((s, index) => {
+        if (index < selectedValue) {
+          s.classList.add('selected');
+        } else {
+          s.classList.remove('selected');
+        }
+      });
+
+      if (selectedValue <= 2) {
+        feedbackContainer.style.display = 'block';
+      } else {
+        feedbackContainer.style.display = 'none';
+      }
+    }
+
+    submitFeedbackButton.addEventListener('click', () => {
+      const comentario = feedbackText.value;
+      const nome_cliente = 'Cliente Anônimo';
+
+      fetch('http://localhost:3000/avaliar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome_cliente, avaliacao: selectedValue, comentario })
+      })
+        .then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(error => console.error('Erro ao enviar dados:', error));
+    });
+  </script>
+</body>
+</html>
