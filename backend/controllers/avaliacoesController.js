@@ -24,9 +24,7 @@ class AvaliacaoController {
   static cadastrarAvaliacao = async (req, res) => {
     try {
       let avaliacao = new avaliacoes(req.body);
-
       let avaliacaoResultado = await avaliacao.save();
-
       res.status(201).send(avaliacaoResultado.toJSON());
     } catch(e){
       res.status(500).send({message: `${e.message} - falha ao cadastrar avaliacão.`});
